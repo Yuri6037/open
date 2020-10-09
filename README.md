@@ -8,6 +8,7 @@ Bring OSX open command to Linux
 - Does not require editing the PATH
 - Strict mode (only checks for desktop and flatpak file names)
 - By default tests the file name and additionally checks .desktop Name entry if provided
+- Circumvents flatpak restriction on launching applications only by providing full id. Instead open allows to specify only application name
 
 ## Install
 - Build the software
