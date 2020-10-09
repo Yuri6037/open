@@ -18,5 +18,6 @@ Bring OSX open command to Linux
 
 ## Build
 - Install meson and ninja (sudo apt install meson ninja-build)
+- Install gcc
 - Make sure you have the GLib installed (it comes pre-installed with any GNOME based desktop environments)
 - Run meson and then ninja
