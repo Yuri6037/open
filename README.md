@@ -9,6 +9,7 @@ Bring OSX open command to Linux
 - Strict mode (only checks for desktop and flatpak file names)
 - By default tests the file name and additionally checks .desktop Name entry if provided
 - Circumvents flatpak restriction on launching applications only by providing full id. Instead open allows to specify only application name
+- Case insensitive
 
 ## Install
 - Build the software
