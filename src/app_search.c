@@ -19,14 +19,14 @@
 #include "app_search.h"
 #include "utils.h"
 
-#define PROP_BASE_DIRECTORY 0
+#define PROP_BASE_DIRECTORY 1
 
 typedef struct {
     GString *base_directory;
     gboolean strict;
 } AppSearchPrivate;
 
-static GParamSpec *obj_properties[1] = { NULL };
+static GParamSpec *obj_properties[2] = { NULL, NULL };
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE(AppSearch, app_search, G_TYPE_OBJECT);
 
@@ -99,7 +99,7 @@ static void app_search_class_init(AppSearchClass *class)
         NULL,
         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE
     );
-    g_object_class_install_properties(object_class, 1, obj_properties);
+    g_object_class_install_properties(object_class, 2, obj_properties);
     class->try_read_command = NULL;
     class->find = find_impl;
 }

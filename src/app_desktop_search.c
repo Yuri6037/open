@@ -21,6 +21,7 @@
 
 struct _AppDesktopSearch
 {
+    AppSearch parent;
 };
 
 G_DEFINE_TYPE(AppDesktopSearch, app_desktop_search, APP_TYPE_SEARCH);
@@ -96,7 +97,7 @@ static void app_desktop_search_class_init(AppDesktopSearchClass *class)
     APP_SEARCH_CLASS(class)->try_read_command = app_desktop_search_try_read_command;
 }
 
-static void app_desktop_search_init()
+static void app_desktop_search_init(G_GNUC_UNUSED AppDesktopSearch *self)
 {
 }
 

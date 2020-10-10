@@ -19,11 +19,14 @@
 #include "open-config.h"
 
 #include "utils.h"
+#include "app_search.h"
+#include "app_desktop_search.h"
+#include "app_flatpak_search.h"
 
 #include <gio/gio.h>
 #include <stdlib.h>
 
-static const gchar *SEARCH_PATHS[] = {
+/*static const gchar *SEARCH_PATHS[] = {
     "/usr/share/applications/",
     "~/.local/share/applications/",
     "~/.local/share/flatpak/exports/bin/",
@@ -153,15 +156,32 @@ static gchar *search_folder(const gboolean strict, const gchar *folder, const gc
     }
     g_dir_close(dir);
     return NULL;
+}*/
+
+/*
+    "/usr/share/applications/",
+    "~/.local/share/applications/",
+    "~/.local/share/flatpak/exports/bin/",
+    "/var/lib/flatpak/exports/bin/"
+*/
+
+static void init_search_array(AppSearch *arr[4])
+{
+    arr[0] = APP_SEARCH(app_desktop_search_new("/usr/share/applications/"));
+    arr[1] = APP_SEARCH(app_flatpak_search_new("/var/lib/flatpak/exports/bin/"));
+    arr[2] = APP_SEARCH(app_desktop_search_new("~/.local/share/applications/"));
+    arr[3] = APP_SEARCH(app_flatpak_search_new("~/.local/share/flatpak/exports/bin/"));
 }
 
 static gchar *locate_app_bin(const gboolean strict, const gchar *appname)
 {
     gchar *res;
+    AppSearch *arr[4];
 
-    for (gsize i = 0; i != sizeof(SEARCH_PATHS) / sizeof(gchar *); ++i)
+    init_search_array(arr);
+    for (gsize i = 0; i != sizeof(arr) / sizeof(AppSearch *); ++i)
     {
-        res = search_folder(strict, SEARCH_PATHS[i], appname);
+        res = app_search_find(arr[i], appname, strict);
         if (res != NULL)
             return res;
     }
