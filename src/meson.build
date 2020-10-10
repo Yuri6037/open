@@ -1,7 +1,13 @@
 open_sources = [
     'main.c',
     'utils.h',
-    'utils.c'
+    'utils.c',
+    'app_search.h',
+    'app_search.c',
+    'app_desktop_search.h',
+    'app_desktop_search.c',
+    'app_flatpak_search.h',
+    'app_flatpak_search.c',
 ]
 
 open_deps = [
