@@ -149,3 +149,18 @@ gchar *desktop_to_command(DesktopFile *desktop)
     g_set_string(&str, g_string_replace(str, "%i", icon));
     return g_strdup(str->str);
 }
+
+gint g_fixed_strcasecmp(const gchar *s1, const gchar *s2)
+{
+    gchar *sf1 = g_utf8_casefold(s1, -1);
+    gchar *sf2 = g_utf8_casefold(s2, -1);
+    gint res;
+
+    g_assert(sf1 != NULL);
+    g_assert(sf2 != NULL);
+    res = strcmp(sf1, sf2);
+    g_free(sf1);
+    g_free(sf2);
+    return res;
+}
+

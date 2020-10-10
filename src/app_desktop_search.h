@@ -1,4 +1,4 @@
-/* utils.h
+/* app_desktop_search.h
  *
  * Copyright 2020 Yuri Edward
  *
@@ -17,25 +17,15 @@
  */
 
 #pragma once
-#include <glib.h>
+#include "app_search.h"
 
-struct _DesktopFile
-{
-    gchar *exec;
-    gchar *name;
-    gchar *icon;
-    gchar *location;
-};
+G_BEGIN_DECLS
 
-typedef struct _DesktopFile DesktopFile;
+#define APP_TYPE_DESKTOP_SEARCH app_desktop_search_get_type()
 
-/* Mini .desktop file parser (https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html) */
-DesktopFile *parse_desktop_file(const gchar *path);
-void free_desktop_file(DesktopFile *desktop);
-gchar *desktop_to_command(DesktopFile *desktop);
+G_DECLARE_FINAL_TYPE(AppDesktopSearch, app_desktop_search, APP, DESKTOP_SEARCH, AppSearch);
 
-/* String utilities */
-GString *g_string_replace(GString *this, const gchar *search, const gchar *replace);
-gboolean g_set_string(GString **object_ptr, GString *new_object);
-gint g_fixed_strcasecmp(const gchar *s1, const gchar *s2);
+AppDesktopSearch *app_desktop_search_new(const gchar *base_directory);
+
+G_END_DECLS
 
