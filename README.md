@@ -6,7 +6,9 @@ Bring OSX open command to Linux
 - Ignores NoDisplay entries
 - Search apps in flatpak exported binaries
 - Does not require editing the PATH
-- Strict mode (only checks for desktop and flatpak file names)
+- Strict mode:
+    - For desktop files, only checks file name without extension
+    - For flatpak, only checks the last component of the app id
 - By default tests the file name and additionally checks .desktop Name entry if provided
 - Circumvents flatpak restriction on launching applications only by providing full id. Instead open allows to specify only application name
 - Case insensitive
