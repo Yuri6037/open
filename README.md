@@ -9,7 +9,9 @@ Bring OSX open command to Linux
 - Strict mode:
     - For desktop files, only checks file name without extension
     - For flatpak, only checks the last component of the app id
-- By default tests the file name and additionally checks .desktop Name entry if provided
+- By default:
+    - For desktop files tests the file name and the Name entry if provided
+    - For flatpak, checks both the last and before last component to account for weird naming convention such as OnlyOffice
 - Circumvents flatpak restriction on launching applications only by providing full id. Instead open allows to specify only application name
 - Case insensitive
 
@@ -31,6 +33,3 @@ On Ubuntu and derivatives this should open nautilus on the current working direc
 - Make sure you have the GLib installed (it comes pre-installed with any GNOME based desktop environments)
 - Run meson and then ninja
 
-## Todo
-- Support checking for the second group string in flatpaks
-- Support launching AppImage

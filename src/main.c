@@ -22,157 +22,21 @@
 #include "app_search.h"
 #include "app_desktop_search.h"
 #include "app_flatpak_search.h"
+#include "app_appimage_search.h"
 
 #include <gio/gio.h>
 #include <stdlib.h>
 
-/*static const gchar *SEARCH_PATHS[] = {
-    "/usr/share/applications/",
-    "~/.local/share/applications/",
-    "~/.local/share/flatpak/exports/bin/",
-    "/var/lib/flatpak/exports/bin/"
-};
+#define N_SEARCH 6
 
-static gchar *extract_name(const gchar *fname)
+static void create_search_array(AppSearch *arr[N_SEARCH])
 {
-    gchar **tab = g_strsplit(fname, ".", INT_MAX);
-    gchar *res;
-    guint len;
-
-    if (tab == NULL)
-        return g_strdup(fname);
-    len = g_strv_length(tab);
-    if (g_str_has_suffix(fname, ".desktop"))
-        res = g_strdup(tab[len - 2]);
-    else
-        res = g_strdup(tab[len - 1]);
-    g_strfreev(tab);
-    return res;
-}
-
-static gchar *attempt_gen_app_bin(const gchar *folder_base, const gchar *fname, DesktopFile *desktop)
-{
-    g_autofree gchar *path = NULL;
-    gchar *exec;
-
-    if (desktop != NULL)
-        exec = desktop_to_command(desktop);
-    else
-    {
-        path = g_strjoin("/", folder_base, fname, NULL);
-        if (g_str_has_suffix(path, ".desktop"))
-        {
-            desktop = parse_desktop_file(path);
-            exec = desktop_to_command(desktop);
-        }
-        else
-        {
-            free_desktop_file(desktop);
-            return g_strdup(path);
-        }
-    }
-    free_desktop_file(desktop);
-    return exec;
-}
-
-static gint g_fixed_strcasecmp(const gchar *s1, const gchar *s2)
-{
-    gchar *sf1 = g_utf8_casefold(s1, -1);
-    gchar *sf2 = g_utf8_casefold(s2, -1);
-    gint res;
-
-    g_assert(sf1 != NULL);
-    g_assert(sf2 != NULL);
-    res = strcmp(sf1, sf2);
-    g_free(sf1);
-    g_free(sf2);
-    return res;
-}
-
-static gboolean check_app_name(const gboolean strict, const gchar *base_folder, const gchar *fname, const gchar *test_app_name, const gchar *appname, DesktopFile **desktop)
-{
-    g_autofree gchar *path = NULL;
-
-    if (strict)
-        return g_fixed_strcasecmp(appname, test_app_name) == 0;
-    else
-    {
-        if (g_fixed_strcasecmp(appname, test_app_name) == 0)
-            return TRUE;
-        if (g_str_has_suffix(fname, ".desktop"))
-        {
-            path = g_strjoin("/", base_folder, fname, NULL);
-            *desktop = parse_desktop_file(path);
-            if (*desktop == NULL)
-                return FALSE;
-            if (g_fixed_strcasecmp(appname, (*desktop)->name) == 0)
-                return TRUE;
-            else
-            {
-                free_desktop_file(*desktop);
-                return FALSE;
-            }
-        }
-        else
-            return FALSE;
-    }
-}
-
-static gchar *check_folder_entry(const gboolean strict, const gchar *fname, const gchar *base_folder, const gchar *appname)
-{
-    g_autofree gchar *test_app_name = extract_name(fname);
-    DesktopFile *desktop = NULL;
-    gchar *bin;
-    gboolean test = check_app_name(strict, base_folder, fname, test_app_name, appname, &desktop);
-
-    if (!test)
-        return NULL;
-    g_debug("May have found application '%s'", fname);
-    bin = attempt_gen_app_bin(base_folder, fname, desktop);
-    if (bin != NULL)
-        return bin;
-    return NULL;
-}
-
-static gchar *search_folder(const gboolean strict, const gchar *folder, const gchar *appname)
-{
-    const char *user_home = g_get_home_dir();
-    g_autoptr(GString) base_folder = g_string_new(folder);
-    g_autoptr(GString) actual_folder = g_string_replace(base_folder, "~", user_home);
-    const gchar *fname = NULL;
-    GDir *dir = g_dir_open(actual_folder->str, 0, NULL);
-    gchar *res;
-
-    if (dir == NULL)
-        return NULL;
-    while ((fname = g_dir_read_name(dir)) != NULL)
-    {
-        res = check_folder_entry(strict, fname, actual_folder->str, appname);
-        if (res != NULL)
-        {
-            g_dir_close(dir);
-            return res;
-        }
-    }
-    g_dir_close(dir);
-    return NULL;
-}*/
-
-/*
-    "/usr/share/applications/",
-    "~/.local/share/applications/",
-    "~/.local/share/flatpak/exports/bin/",
-    "/var/lib/flatpak/exports/bin/"
-*/
-
-#define N_SEARCH 4
-
-static void init_search_array(AppSearch *arr[N_SEARCH])
-{
-    arr[0] = APP_SEARCH(app_desktop_search_new("/usr/share/applications/"));
-    arr[1] = APP_SEARCH(app_flatpak_search_new("/var/lib/flatpak/exports/bin/"));
-    arr[2] = APP_SEARCH(app_desktop_search_new("~/.local/share/applications/"));
-    arr[3] = APP_SEARCH(app_flatpak_search_new("~/.local/share/flatpak/exports/bin/"));
+    arr[0] = APP_SEARCH(app_desktop_search_new("."));
+    arr[1] = APP_SEARCH(app_appimage_search_new("."));
+    arr[2] = APP_SEARCH(app_desktop_search_new("/usr/share/applications/"));
+    arr[3] = APP_SEARCH(app_flatpak_search_new("/var/lib/flatpak/exports/bin/"));
+    arr[4] = APP_SEARCH(app_desktop_search_new("~/.local/share/applications/"));
+    arr[5] = APP_SEARCH(app_flatpak_search_new("~/.local/share/flatpak/exports/bin/"));
 }
 
 static void destroy_search_array(AppSearch *arr[N_SEARCH])
@@ -186,7 +50,7 @@ static gchar *locate_app_bin(const gboolean strict, const gchar *appname)
     gchar *res;
     AppSearch *arr[N_SEARCH];
 
-    init_search_array(arr);
+    create_search_array(arr);
     for (gsize i = 0; i != N_SEARCH; ++i)
     {
         res = app_search_find(arr[i], appname, strict);

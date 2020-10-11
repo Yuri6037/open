@@ -8,6 +8,8 @@ open_sources = [
     'app_desktop_search.c',
     'app_flatpak_search.h',
     'app_flatpak_search.c',
+    'app_appimage_search.h',
+    'app_appimage_search.c'
 ]
 
 open_deps = [
