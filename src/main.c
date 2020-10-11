@@ -165,7 +165,9 @@ static gchar *search_folder(const gboolean strict, const gchar *folder, const gc
     "/var/lib/flatpak/exports/bin/"
 */
 
-static void init_search_array(AppSearch *arr[4])
+#define N_SEARCH 4
+
+static void init_search_array(AppSearch *arr[N_SEARCH])
 {
     arr[0] = APP_SEARCH(app_desktop_search_new("/usr/share/applications/"));
     arr[1] = APP_SEARCH(app_flatpak_search_new("/var/lib/flatpak/exports/bin/"));
@@ -173,18 +175,25 @@ static void init_search_array(AppSearch *arr[4])
     arr[3] = APP_SEARCH(app_flatpak_search_new("~/.local/share/flatpak/exports/bin/"));
 }
 
+static void destroy_search_array(AppSearch *arr[N_SEARCH])
+{
+    for (gsize i = 0; i != N_SEARCH; ++i)
+        g_object_unref(arr[i]);
+}
+
 static gchar *locate_app_bin(const gboolean strict, const gchar *appname)
 {
     gchar *res;
-    AppSearch *arr[4];
+    AppSearch *arr[N_SEARCH];
 
     init_search_array(arr);
-    for (gsize i = 0; i != sizeof(arr) / sizeof(AppSearch *); ++i)
+    for (gsize i = 0; i != N_SEARCH; ++i)
     {
         res = app_search_find(arr[i], appname, strict);
         if (res != NULL)
             return res;
     }
+    destroy_search_array(arr);
     return NULL;
 }
 

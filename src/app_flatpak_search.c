@@ -47,8 +47,7 @@ static gboolean app_flatpak_search_check_app_name(const gchar *appname, const gc
 
 static gchar *app_flatpak_search_try_read_command(AppSearch *self, const gchar *appname, const gchar *entry_name, const gboolean strict)
 {
-    g_autofree gchar *path;
-    const gchar *base_directory;
+    g_autofree gchar *base_directory = NULL;
     gchar *command = NULL;
 
     g_object_get(G_OBJECT(self), "base_directory", &base_directory, NULL);
@@ -68,6 +67,6 @@ static void app_flatpak_search_init(G_GNUC_UNUSED AppFlatpakSearch *self)
 
 AppFlatpakSearch *app_flatpak_search_new(const gchar *base_directory)
 {
-    return g_object_new(APP_TYPE_FLATPAK_SEARCH, "base_directory", base_directory);
+    return g_object_new(APP_TYPE_FLATPAK_SEARCH, "base_directory", base_directory, NULL);
 }
 

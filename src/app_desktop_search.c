@@ -73,9 +73,9 @@ static DesktopFile *app_desktop_search_check_app_name(const gchar *appname, cons
 
 static gchar *app_desktop_search_try_read_command(AppSearch *self, const gchar *appname, const gchar *entry_name, const gboolean strict)
 {
-    g_autofree gchar *test_app_name;
-    g_autofree gchar *path;
-    const gchar *base_directory;
+    g_autofree gchar *test_app_name = NULL;
+    g_autofree gchar *path = NULL;
+    g_autofree gchar *base_directory = NULL;
     DesktopFile *desktop;
     gchar *command;
 
@@ -103,6 +103,6 @@ static void app_desktop_search_init(G_GNUC_UNUSED AppDesktopSearch *self)
 
 AppDesktopSearch *app_desktop_search_new(const gchar *base_directory)
 {
-    return g_object_new(APP_TYPE_DESKTOP_SEARCH, "base_directory", base_directory);
+    return g_object_new(APP_TYPE_DESKTOP_SEARCH, "base_directory", base_directory, NULL);
 }
 

@@ -23,7 +23,6 @@
 
 typedef struct {
     GString *base_directory;
-    gboolean strict;
 } AppSearchPrivate;
 
 static GParamSpec *obj_properties[2] = { NULL, NULL };
@@ -86,10 +85,18 @@ static void app_search_get_property(GObject *obj, guint prop, GValue *value, GPa
     }
 }
 
+static void app_search_finalize(GObject *obj)
+{
+    AppSearchPrivate *self = app_search_get_instance_private(APP_SEARCH(obj));
+
+    g_string_free(self->base_directory, TRUE);
+}
+
 static void app_search_class_init(AppSearchClass *class)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(class);
 
+    object_class->finalize = app_search_finalize;
     object_class->set_property = app_search_set_property;
     object_class->get_property = app_search_get_property;
     obj_properties[PROP_BASE_DIRECTORY] = g_param_spec_string(
@@ -108,24 +115,16 @@ static void app_search_init(AppSearch *self)
 {
     AppSearchPrivate *private = app_search_get_instance_private(self);
 
-    private->strict = FALSE;
     private->base_directory = NULL;
-}
-
-gboolean app_search_is_strict(AppSearch *self)
-{
-    AppSearchPrivate *private = app_search_get_instance_private(self);
-
-    return private->strict;
 }
 
 gchar *app_search_find(AppSearch *self, const gchar *appname, const gboolean strict)
 {
-    return APP_SEARCH_CLASS(self)->find(self, appname, strict);
+    return APP_SEARCH_GET_CLASS(self)->find(self, appname, strict);
 }
 
 gchar *app_search_try_read_command(AppSearch *self, const gchar *appname, const gchar *entry_name, const gboolean strict)
 {
-    return APP_SEARCH_CLASS(self)->try_read_command(self, appname, entry_name, strict);
+    return APP_SEARCH_GET_CLASS(self)->try_read_command(self, appname, entry_name, strict);
 }
 
